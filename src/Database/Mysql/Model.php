@@ -1,6 +1,6 @@
 <?php
 
-namespace Electra\Dal\Database\Mysql\Model;
+namespace Electra\Dal\Database\Mysql;
 
 use Electra\Dal\Database\Mysql\Mysql;
 use Electra\Utility\Objects;
