@@ -1,0 +1,26 @@
+{
+	"name": "electra-dal",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url":  "https://github.com/ieatstickers/electra-utility.git"
+		}
+	],
+	"require": {
+		"illuminate/database": "^5.8",
+		"doctrine/dbal": "^2.9",
+		"electra-utility": "dev-master"
+	},
+	"require-dev" : {
+	},
+	"authors": [
+		{
+			"name": "Mike Burke"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Electra\\Dal\\": "src"
+		}
+	}
+}
