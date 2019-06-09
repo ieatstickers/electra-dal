@@ -42,7 +42,21 @@ class Mysql extends Capsule
    */
   public static function schema($connection = null)
   {
-    static::createDatabase($connection);
+    if (!$connection)
+    {
+      $connection = self::connection()->getName();
+    }
+
+    $connectionConfig = Arrays::getByKey($connection, self::$dbConnections);
+
+    if (!$connectionConfig)
+    {
+      throw new \Exception("No connection config found for: $connection");
+    }
+
+    $dbName = Arrays::getByKey('database', $connectionConfig);
+
+    static::createDatabase($dbName);
     return parent::schema($connection);
   }
 
