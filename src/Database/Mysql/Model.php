@@ -38,18 +38,21 @@ class Model extends EloquentModel
    */
   public static function setDbConnections(array $dbConnections)
   {
+    $requiredProperties = [ "database", "host", "username", "password" ];
+
     $propertyTypeMap = [
-      "name" => "string",
       "database" => "string",
       "host" => "string",
       "username" => "string",
-      "password" => "string"
+      "password" => "string",
+      "default" => "bool"
     ];
 
     foreach ($dbConnections as $dbConnection)
     {
       $dbConnection = (object)$dbConnection;
-      Objects::validatePropertyTypes($dbConnection, $propertyTypeMap);
+      Objects::validatePropertiesExist((object)$dbConnection, $requiredProperties, true);
+      Objects::validatePropertyTypes((object)$dbConnection, $propertyTypeMap, true);
     }
 
     self::$dbConnections = $dbConnections;
@@ -67,10 +70,8 @@ class Model extends EloquentModel
 
     $mysqlCapsule = new Mysql();
 
-    foreach (self::$dbConnections as $connectionConfig)
+    foreach (self::$dbConnections as $name => $connectionConfig)
     {
-      $connectionName = Arrays::getByKey('name', $connectionConfig);
-
       $mysqlCapsule->addConnection(
         [
           "driver" => "mysql",
@@ -79,12 +80,14 @@ class Model extends EloquentModel
           "username" => Arrays::getByKey('username', $connectionConfig),
           "password" => Arrays::getByKey('password', $connectionConfig)
         ],
-        $connectionName
+        $name
       );
 
-      if ($connectionName == 'default')
+      $isDefaultConnection = Arrays::getByKey('default', $connectionConfig);
+
+      if ($isDefaultConnection)
       {
-        $mysqlCapsule->getDatabaseManager()->setDefaultConnection($connectionName);
+        $mysqlCapsule->getDatabaseManager()->setDefaultConnection($name);
       }
     }
 
