@@ -20,9 +20,7 @@ abstract class IndependentModel extends Model
     parent::__construct();
 
     // Create DB if not exists
-    Mysql::connection()->statement(
-        "CREATE DATABASE IF NOT EXISTS {$this->connection} CHARACTER SET UTF8 COLLATE utf8_bin"
-    );
+    Mysql::createDatabase($this->connection);;
 
     // Check if table exists
     $tableExists = Mysql::schema($this->connection)->hasTable($this->table);
