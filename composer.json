@@ -1,9 +1,9 @@
 {
-	"name": "electra-dal",
+	"name": "electra/dal",
 	"repositories": [
 		{
 			"type": "vcs",
-			"url":  "https://github.com/ieatstickers/electra-utility.git"
+			"url":  "https://github.com/ieatstickers/utility.git"
 		}
 	],
 	"require": {
