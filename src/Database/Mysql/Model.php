@@ -2,11 +2,8 @@
 
 namespace Electra\Dal\Database\Mysql;
 
-use Electra\Dal\Database\Mysql\Mysql;
-use Electra\Utility\Objects;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Query\Builder;
-use Electra\Utility\Arrays;
 
 class Model extends EloquentModel
 {
@@ -35,4 +32,21 @@ class Model extends EloquentModel
   {
     return $this->getConnection()->table($this->getTable());
   }
+
+  /**
+   * Save the model to the database.
+   *
+   * @param  array  $options
+   * @return bool
+   */
+  public function save(array $options = [])
+  {
+    if ($this->id)
+    {
+      $this->exists = true;
+    }
+
+    return parent::save($options);
+  }
+
 }
