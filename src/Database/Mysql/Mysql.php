@@ -5,15 +5,23 @@ namespace Electra\Dal\Database\Mysql;
 use Electra\Utility\Arrays;
 use Electra\Utility\Objects;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Connection;
+use Illuminate\Database\Schema\Builder;
 
 class Mysql extends Capsule
 {
   /** @var array */
   private static $dbConnections;
+  /** @var array */
+  private static $dbUsers;
+  /** @var string */
+  private static $dbUser;
+  /** @var bool */
+  private static $fallBackToDefaultUser = true;
 
   /**
    * @param null $connection
-   * @return \Illuminate\Database\Connection
+   * @return Connection
    * @throws \Exception
    */
   public static function connection($connection = null)
@@ -37,7 +45,7 @@ class Mysql extends Capsule
    * Get a schema builder instance.
    *
    * @param  string|null $connection
-   * @return \Illuminate\Database\Schema\Builder
+   * @return Builder
    * @throws \Exception
    */
   public static function schema($connection = null)
@@ -69,13 +77,11 @@ class Mysql extends Capsule
    */
   public static function setDbConnections(array $dbConnections)
   {
-    $requiredProperties = [ "database", "host", "username", "password" ];
+    $requiredProperties = [ "database", "host" ];
 
     $propertyTypeMap = [
       "database" => "string",
       "host" => "string",
-      "username" => "string",
-      "password" => "string",
       "default" => "bool"
     ];
 
@@ -90,14 +96,55 @@ class Mysql extends Capsule
   }
 
   /**
+   * @param array $dbUsers
    * @throws \Exception
+   *
+   * This method stores the MySQL users in a static property. These users
+   * are used when connections are registered.
    */
+  public static function registerDbUsers(array $dbUsers)
+  {
+    $requiredProperties = [ "username", "password" ];
+
+    $propertyTypeMap = [
+      "username" => "string",
+      "password" => "string",
+      "default" => "bool"
+    ];
+
+    foreach ($dbUsers as $dbUser)
+    {
+      $dbUser = (object)$dbUser;
+      Objects::validatePropertiesExist((object)$dbUser, $requiredProperties, true);
+      Objects::validatePropertyTypes((object)$dbUser, $propertyTypeMap, true);
+    }
+
+    self::$dbUsers = $dbUsers;
+  }
+
+  /**
+   * @param string $dbUser
+   * @param bool $fallBackToDefaultUser
+   */
+  public static function setUser(string $dbUser, $fallBackToDefaultUser = false)
+  {
+    self::$dbUser = $dbUser;
+    self::$fallBackToDefaultUser = $fallBackToDefaultUser;
+  }
+
+  /** @throws \Exception */
   public static function registerDbConnections()
   {
     if (!self::$dbConnections)
     {
       throw new \Exception("Cannot register database connections - no connections set");
     }
+    if (!self::$dbUsers)
+    {
+      throw new \Exception("Cannot register database connections - no users registered");
+    }
+
+    $dbUser = self::getDbUser();
 
     $mysqlCapsule = new self();
 
@@ -109,8 +156,8 @@ class Mysql extends Capsule
           "driver" => "mysql",
           "host" => Arrays::getByKey('host', $connectionConfig),
           "database" => Arrays::getByKey('database', $connectionConfig),
-          "username" => Arrays::getByKey('username', $connectionConfig),
-          "password" => Arrays::getByKey('password', $connectionConfig)
+          "username" => Arrays::getByKey('username', $dbUser),
+          "password" => Arrays::getByKey('password', $dbUser)
         ],
         $name
       );
@@ -125,5 +172,42 @@ class Mysql extends Capsule
 
     $mysqlCapsule->setAsGlobal();
     $mysqlCapsule->bootEloquent();
+  }
+
+  /**
+   * @return mixed|null
+   * @throws \Exception
+   */
+  private static function getDbUser()
+  {
+    $selectedDbUser = null;
+    $defaultDbUser = null;
+
+    foreach (self::$dbUsers as $key => $dbUser)
+    {
+      // Set default
+      if (Arrays::getByKey('default', $dbUser))
+      {
+        $defaultDbUser = $dbUser;
+      }
+
+      // Set selected
+      if (self::$dbUser && self::$dbUser == $key)
+      {
+        $selectedDbUser = $dbUser;
+      }
+    }
+
+    if (self::$dbUser && $selectedDbUser)
+    {
+      return $selectedDbUser;
+    }
+
+    if (self::$fallBackToDefaultUser && $defaultDbUser)
+    {
+      return $defaultDbUser;
+    }
+
+    throw new \Exception('DB user not found');
   }
 }
