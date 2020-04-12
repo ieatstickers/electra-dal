@@ -144,7 +144,9 @@ class Mysql extends Capsule
       throw new \Exception("Cannot register database connections - no users registered");
     }
 
-    $dbUser = self::getDbUser();
+    $dbUser = self::getUser();
+
+    var_dump($dbUser);
 
     $mysqlCapsule = new self();
 
@@ -178,7 +180,7 @@ class Mysql extends Capsule
    * @return mixed|null
    * @throws \Exception
    */
-  private static function getDbUser()
+  private static function getUser()
   {
     $selectedDbUser = null;
     $defaultDbUser = null;
