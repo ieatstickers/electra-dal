@@ -146,8 +146,6 @@ class Mysql extends Capsule
 
     $dbUser = self::getUser();
 
-    var_dump($dbUser);
-
     $mysqlCapsule = new self();
 
     foreach (self::$dbConnections as $name => $connectionConfig)
