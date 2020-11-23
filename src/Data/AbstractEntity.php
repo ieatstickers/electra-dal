@@ -11,7 +11,7 @@ abstract class AbstractEntity
    * @return static
    * @throws \Exception
    */
-  public static function create($data = []): ?self
+  public static function create($data = [])
   {
     if (is_null($data))
     {
