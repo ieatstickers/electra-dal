@@ -6,9 +6,13 @@ abstract class AbstractEntity
 {
   /**
    * @param $data
-   * @return mixed
+   *
+   * @return object
    */
-  public static abstract function create($data);
+  public static function create($data)
+  {
+    return (object)$data;
+  }
 
   /** @return mixed */
   protected static abstract function getModel();
