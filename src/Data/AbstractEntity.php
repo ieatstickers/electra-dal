@@ -11,6 +11,11 @@ abstract class AbstractEntity
    */
   public static function create($data)
   {
+    if (is_null($data))
+    {
+      return null;
+    }
+
     return (object)$data;
   }
 
