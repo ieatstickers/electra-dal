@@ -2,6 +2,7 @@
 
 namespace Electra\Dal\Data;
 
+use Electra\Dal\Database\Mysql\Model;
 use Electra\Utility\Collection;
 use Electra\Utility\Objects;
 
@@ -27,11 +28,12 @@ abstract class AbstractEntity
 
   /**
    * @param array $data
+   * @param bool  $skipHydration
    *
    * @return Collection
    * @throws \Exception
    */
-  public static function toCollection($data = []): Collection
+  public static function toCollection(iterable $data = [], $skipHydration = false): Collection
   {
     $entityCollection = new Collection();
 
@@ -42,7 +44,9 @@ abstract class AbstractEntity
 
     foreach($data as $item)
     {
-      $entityCollection->add(self::create($item));
+      $itemData = $item instanceof Model ? (object)($item->getAttributes()) : $data;
+      $entity = $skipHydration ? $itemData : self::create($itemData);
+      $entityCollection->add($entity);
     }
 
     return $entityCollection;
