@@ -2,6 +2,7 @@
 
 namespace Electra\Dal\Data;
 
+use Electra\Utility\Collection;
 use Electra\Utility\Objects;
 
 abstract class AbstractEntity
@@ -22,6 +23,29 @@ abstract class AbstractEntity
       new static(),
       (object)$data
     );
+  }
+
+  /**
+   * @param array $data
+   *
+   * @return Collection
+   * @throws \Exception
+   */
+  public static function toCollection($data = []): Collection
+  {
+    $entityCollection = new Collection();
+
+    if(is_null($data))
+    {
+      return $entityCollection;
+    }
+
+    foreach($data as $item)
+    {
+      $entityCollection->add(self::create($item));
+    }
+
+    return $entityCollection;
   }
 
   /** @return mixed */
