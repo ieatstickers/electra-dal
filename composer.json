@@ -7,9 +7,8 @@
 		}
 	],
 	"require": {
-		"illuminate/database": "^5.8",
-		"doctrine/dbal": "^2.9",
-		"electra/utility": "dev-master"
+		"illuminate/database": "^8.77",
+		"electra/utility": "dev-php8.1-upgrade"
 	},
 	"require-dev" : {
 	},
