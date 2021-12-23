@@ -1,25 +1,26 @@
 {
-	"name": "electra/dal",
-	"repositories": [
-		{
-			"type": "vcs",
-			"url":  "https://github.com/ieatstickers/electra-utility.git"
-		}
-	],
-	"require": {
-		"illuminate/database": "^8.77",
-		"electra/utility": "dev-php8.1-upgrade"
-	},
-	"require-dev" : {
-	},
-	"authors": [
-		{
-			"name": "Mike Burke"
-		}
-	],
-	"autoload": {
-		"psr-4": {
-			"Electra\\Dal\\": "src"
-		}
-	}
+  "name": "electra/dal",
+  "prefer-stable": true,
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/ieatstickers/electra-utility.git"
+    }
+  ],
+  "require": {
+    "illuminate/database": "^8.77",
+    "electra/utility": "dev-master"
+  },
+  "require-dev": {
+  },
+  "authors": [
+    {
+      "name": "Mike Burke"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Electra\\Dal\\": "src"
+    }
+  }
 }
